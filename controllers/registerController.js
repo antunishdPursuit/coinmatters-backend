@@ -9,9 +9,11 @@ const SESSION_SECONDS = 60 * 60;
 // its own requests still carry it.
 const COOKIE_OPTIONS = { httpOnly: true, secure: true, sameSite: "lax", path: "/" };
 
+// Only what the frontend needs about a user; never the password hash.
+const publicUser = (user) => ({ user_id: user.user_id, username: user.username, email: user.email });
+
 function generateAuthToken(user) {
-  // Only what the frontend needs; never the password hash.
-  const payload = { user_id: user.user_id, username: user.username, email: user.email };
+  const payload = publicUser(user);
   const secretKey = process.env.TOKEN_SECRET; 
   const options = { expiresIn: SESSION_SECONDS };
 
@@ -57,7 +59,8 @@ class UserController {
       const token = generateAuthToken(user);
       res.cookie("dataToken", token, { ...COOKIE_OPTIONS, maxAge: SESSION_SECONDS * 1000 });
       console.log("Login Successful")
-      res.status(200).json("Cookie Set");
+      // The frontend learns who logged in without a second request.
+      res.status(200).json({ message: "Cookie Set", user: publicUser(user) });
     } catch (error) {
       console.error("Error logging in:", error);
       res.status(500).json({ error: "Internal server error" });
@@ -81,8 +84,9 @@ class UserController {
 
   }
 
+  // Also says who is logged in, so a reloaded page knows the user.
   async checkLogin(req, res){
-    res.status(200).json({ message: 'Cookie Works' });
+    res.status(200).json({ message: 'Cookie Works', user: publicUser(req.user) });
   }
   
 }

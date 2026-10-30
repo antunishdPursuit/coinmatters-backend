@@ -19,8 +19,10 @@ test("/user and /check-login need a valid session", async () => {
 });
 
 test("/check-login and /user accept a valid session", async () => {
-  const { cookie, username } = await newSession();
-  assert.equal((await request("/check-login", { cookie })).status, 200);
+  const { cookie, username, user_id, email } = await newSession();
+  const check = await request("/check-login", { cookie });
+  assert.equal(check.status, 200);
+  assert.deepEqual(check.json.user, { user_id, username, email });
   const me = await request("/user", { cookie });
   assert.equal(me.status, 200);
   assert.equal(me.json.authorizedData.username, username);

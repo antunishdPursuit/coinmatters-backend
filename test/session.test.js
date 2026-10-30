@@ -10,6 +10,9 @@ test("the login cookie is HttpOnly, Secure, SameSite=Lax and lasts as long as it
   const user = await registerUser();
   const res = await request("/login", { method: "POST", body: { email: user.email, password: TEST_PASSWORD } });
   assert.equal(res.status, 200);
+  // The response says who logged in, without the password hash.
+  assert.deepEqual(Object.keys(res.json.user).sort(), ["email", "user_id", "username"]);
+  assert.equal(res.json.user.username, user.username);
   const header = res.headers.get("set-cookie");
   assert.ok(attr(header, "HttpOnly"));
   assert.ok(attr(header, "Secure"));
