@@ -10,6 +10,13 @@ process.env.REGISTER_LIMIT ??= "1000";
 const app = require("../app.js");
 const db = require("../db/dbConfig.js");
 
+// The app's own account can't delete users, so clean up as the owner.
+const adminDb = db.$config.pgp({
+  ...db.$cn,
+  user: process.env.PG_ADMIN_USER || process.env.PG_USER,
+  password: process.env.PG_ADMIN_PASSWORD || process.env.PG_PASSWORD,
+});
+
 const TEST_PASSWORD = "test-password-123";
 const createdEmails = [];
 let server;
@@ -23,11 +30,12 @@ before(async () => {
 
 after(async () => {
   if (createdEmails.length) {
-    await db.none("DELETE FROM users WHERE email IN ($1:csv)", [createdEmails]);
+    await adminDb.none("DELETE FROM users WHERE email IN ($1:csv)", [createdEmails]);
   }
   server.closeAllConnections();
   await new Promise((resolve) => server.close(resolve));
   await db.$pool.end();
+  await adminDb.$pool.end();
 });
 
 // Sends a request to the test server. Requests other than GET are sent

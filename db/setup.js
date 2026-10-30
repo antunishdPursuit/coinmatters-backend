@@ -5,19 +5,24 @@
 //      bcrypt hash.
 //   3. Moves each id counter past the highest id in its table, since the
 //      sample data sets some ids itself.
-// The database itself must already exist.
+// It connects as the database owner (PG_ADMIN_USER, or PG_USER if that is
+// not set). The database itself must already exist.
 require("dotenv").config({ quiet: true });
 const fs = require("fs");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const pgp = require("pg-promise")();
 
+const admin = {
+  user: process.env.PG_ADMIN_USER || process.env.PG_USER,
+  password: process.env.PG_ADMIN_PASSWORD || process.env.PG_PASSWORD,
+};
+
 const db = pgp({
   host: process.env.PG_HOST,
   port: process.env.PG_PORT,
   database: process.env.PG_DATABASE,
-  user: process.env.PG_USER,
-  password: process.env.PG_PASSWORD,
+  ...admin,
 });
 
 // Reads a SQL file, leaving out psql-only lines such as "\c database".
