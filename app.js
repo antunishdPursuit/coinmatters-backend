@@ -1,4 +1,5 @@
 const { requireLogin } = require("./verification/checkAuth");
+const { validate, registerProblem, loginProblem } = require("./validations/input");
 
 // DEPENDENCIES
 const cors = require("cors");
@@ -42,8 +43,8 @@ app.get("/", (req, res) => {
   res.send("Welcome to CoinMatters App, where ya coin really matters");
 });
 
-app.post('/register', registerController.registerUser);
-app.post('/login', registerController.loginUser);
+app.post('/register', validate(registerProblem), registerController.registerUser);
+app.post('/login', validate(loginProblem), registerController.loginUser);
 app.get('/user', requireLogin, registerController.userData)
 app.get('/check-login', requireLogin, registerController.checkLogin)
 app.post('/logout', registerController.logOut)

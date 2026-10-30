@@ -21,13 +21,18 @@ function generateAuthToken(user) {
 class UserController {
   async registerUser(req, res) {
     try {
-      const { username, email, password } = req.body;
+      const { username, password } = req.body;
+      const email = req.body.email.trim().toLowerCase();
       const hashedPassword = await bcrypt.hash(password, 10);
 
       await userModel.createUser(username, email, hashedPassword);
 
       res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
+      // 23505: Postgres unique_violation on username or email
+      if (error.code === "23505") {
+        return res.status(409).json({ error: "That username or email is already in use" });
+      }
       console.error("Error registering user:", error);
       res.status(500).json({ error: "Internal server error" });
     }
@@ -36,7 +41,8 @@ class UserController {
   async loginUser(req, res) {
     
     try {
-      const { email, password } = req.body;
+      const { password } = req.body;
+      const email = req.body.email.trim().toLowerCase();
 
       const user = await userModel.findUserByEmail(email);
       if (!user) {

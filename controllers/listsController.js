@@ -10,6 +10,7 @@ const {
 } = require("../queries/lists.js");
 const { checkIds } = require("../validations/ids.js");
 const { requireLogin } = require("../verification/checkAuth.js");
+const { validate, listProblem } = require("../validations/input.js");
 
 // The user_id in the path must be the logged-in user's own.
 const requireOwnUser = (req, res, next) => {
@@ -34,7 +35,7 @@ lists.get("/user/:user_id", checkIds("user_id"), requireOwnUser, async (req, res
 });
 
 // CREATE a list for the logged-in user
-lists.post("/:user_id", checkIds("user_id"), requireOwnUser, async (req, res) => {
+lists.post("/:user_id", checkIds("user_id"), requireOwnUser, validate(listProblem), async (req, res) => {
   const newListData = {
     user_id: req.user.user_id,
     list_name: req.body.list_name,
@@ -47,7 +48,7 @@ lists.post("/:user_id", checkIds("user_id"), requireOwnUser, async (req, res) =>
 });
 
 // UPDATE a list for a specific user
-lists.put("/user/:user_id/:id", checkIds("user_id", "id"), requireOwnUser, async (req, res) => {
+lists.put("/user/:user_id/:id", checkIds("user_id", "id"), requireOwnUser, validate(listProblem), async (req, res) => {
   const { id } = req.params;
   const updatedListData = {
     list_name: req.body.list_name,

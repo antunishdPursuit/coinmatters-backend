@@ -1,6 +1,6 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const { request, newSession } = require("./helpers.js");
+const { db, request, newSession } = require("./helpers.js");
 
 // No response may carry a raw Postgres error.
 function assertNoDatabaseError(res) {
@@ -32,11 +32,17 @@ test("missing records get 404", async () => {
 });
 
 test("a database failure gets a plain 500", async () => {
-  const { user_id, cookie } = await newSession();
-  // list_name is required by the table, so the insert fails in Postgres.
-  const res = await request(`/lists/${user_id}`, { method: "POST", cookie, body: { products: [] } });
-  assert.equal(res.status, 500);
-  assert.deepEqual(res.json, { error: "Internal server error" });
+  const realAny = db.any;
+  db.any = async () => {
+    throw Object.assign(new Error("connection lost"), { code: "08006", severity: "FATAL" });
+  };
+  try {
+    const res = await request("/products");
+    assert.equal(res.status, 500);
+    assert.deepEqual(res.json, { error: "Internal server error" });
+  } finally {
+    db.any = realAny;
+  }
 });
 
 test("broken JSON gets 400", async () => {
