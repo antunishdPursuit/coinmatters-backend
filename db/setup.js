@@ -1,5 +1,5 @@
 // Sets up the database: `npm run db:setup`. Safe to run more than once.
-//   1. Creates any missing tables (local_schema.sql).
+//   1. Creates any missing tables (schema.sql).
 //   2. If there are no users yet, loads the sample data (seed.sql). Then
 //      replaces any plaintext password (the sample data has them) with a
 //      bcrypt hash.
@@ -38,7 +38,7 @@ async function hashSeedPasswords(t) {
 
 async function setup() {
   await db.tx(async (t) => {
-    await t.none(readSql("local_schema.sql"));
+    await t.none(readSql("schema.sql"));
     console.log("Tables are in place");
 
     const { count } = await t.one("SELECT count(*)::int AS count FROM users");
