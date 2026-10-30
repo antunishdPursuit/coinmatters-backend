@@ -1,6 +1,7 @@
 -- CoinMatters tables. Safe to run more than once: it never drops the
 -- database or a table, and only creates what is missing. Run it with
 -- `npm run db:setup`, which also loads the sample data into an empty database.
+-- Tables made by an older version are brought up to date by upgrades.sql.
 
 CREATE TABLE IF NOT EXISTS users (
  user_id SERIAL PRIMARY KEY,
@@ -12,13 +13,16 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS lists (
  list_id SERIAL PRIMARY KEY,
- user_id INTEGER REFERENCES users(user_id)
+ user_id INTEGER NOT NULL REFERENCES users(user_id)
  ON DELETE CASCADE,
  list_name TEXT NOT NULL,
  products TEXT[],
  note VARCHAR(255),
  date_created TEXT
 );
+
+-- The app looks up lists by their owner.
+CREATE INDEX IF NOT EXISTS lists_user_id_idx ON lists (user_id);
 
 CREATE TABLE IF NOT EXISTS retailers (
   retailer_id SERIAL PRIMARY KEY,
