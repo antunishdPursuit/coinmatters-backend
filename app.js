@@ -1,4 +1,5 @@
 const { requireLogin } = require("./verification/checkAuth");
+const { loginLimiter, registerLimiter } = require("./verification/rateLimits");
 const { validate, registerProblem, loginProblem } = require("./validations/input");
 
 // DEPENDENCIES
@@ -43,8 +44,8 @@ app.get("/", (req, res) => {
   res.send("Welcome to CoinMatters App, where ya coin really matters");
 });
 
-app.post('/register', validate(registerProblem), registerController.registerUser);
-app.post('/login', validate(loginProblem), registerController.loginUser);
+app.post('/register', registerLimiter, validate(registerProblem), registerController.registerUser);
+app.post('/login', loginLimiter, validate(loginProblem), registerController.loginUser);
 app.get('/user', requireLogin, registerController.userData)
 app.get('/check-login', requireLogin, registerController.checkLogin)
 app.post('/logout', registerController.logOut)

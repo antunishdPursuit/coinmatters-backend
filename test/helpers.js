@@ -1,6 +1,12 @@
 // Shared setup for the API tests. Each test file starts the app on a free
 // port and creates its own users, which are removed again when it finishes.
 const { after, before } = require("node:test");
+
+// The tests register and log in many users from one address, so raise the
+// rate limits unless a test file has set its own.
+process.env.LOGIN_LIMIT ??= "1000";
+process.env.REGISTER_LIMIT ??= "1000";
+
 const app = require("../app.js");
 const db = require("../db/dbConfig.js");
 
