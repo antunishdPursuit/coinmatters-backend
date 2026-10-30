@@ -30,9 +30,16 @@ app.use(cors({
 
 // Requests that change data must be JSON. Another site can only send JSON
 // here after a CORS check that it fails, so this blocks forged form posts.
+// A DELETE without a body passes too: browsers send it with no content
+// type, and forms can't send DELETE at all.
+const hasBody = (req) =>
+  req.headers["transfer-encoding"] !== undefined || Number(req.headers["content-length"] || 0) > 0;
 app.use((req, res, next) => {
   const type = (req.headers["content-type"] || "").split(";")[0].trim().toLowerCase();
   if (["GET", "HEAD", "OPTIONS"].includes(req.method) || type === "application/json") {
+    return next();
+  }
+  if (req.method === "DELETE" && !hasBody(req)) {
     return next();
   }
   res.status(415).json({ error: "Requests that change data must be JSON" });

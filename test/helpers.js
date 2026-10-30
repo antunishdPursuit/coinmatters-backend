@@ -38,15 +38,15 @@ after(async () => {
   await adminDb.$pool.end();
 });
 
-// Sends a request to the test server. Requests other than GET are sent
-// with a JSON content type unless the caller sets their own.
+// Sends a request to the test server. A body is sent as JSON unless the
+// caller sets its own content type.
 async function request(path, { method = "GET", body, cookie, headers = {} } = {}) {
   const init = { method, headers: { ...headers } };
+  // Like the browser, label a request as JSON only when it has a body.
   if (body !== undefined) {
     init.body = typeof body === "string" ? body : JSON.stringify(body);
+    init.headers["Content-Type"] ??= "application/json";
   }
-  // Like the frontend, send every request that changes data as JSON.
-  if (method !== "GET") init.headers["Content-Type"] ??= "application/json";
   if (cookie) init.headers.Cookie = cookie;
   const res = await fetch(baseUrl + path, init);
   const text = await res.text();

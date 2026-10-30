@@ -46,3 +46,10 @@ test("requests that change data must be JSON", async () => {
   const bare = await fetch(url("/logout"), { method: "POST" });
   assert.equal(bare.status, 415);
 });
+
+test("a DELETE with no body passes without a content type, one with a body doesn't", async () => {
+  // The path doesn't exist, so passing the check shows up as 404.
+  assert.equal((await fetch(url("/nope"), { method: "DELETE" })).status, 404);
+  const withBody = await fetch(url("/nope"), { method: "DELETE", body: "x=1", headers: { "Content-Type": "text/plain" } });
+  assert.equal(withBody.status, 415);
+});

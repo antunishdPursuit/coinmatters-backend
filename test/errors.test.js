@@ -53,7 +53,8 @@ test("broken JSON gets 400", async () => {
 
 test("unknown paths get 404 for every method", async () => {
   for (const method of ["GET", "POST", "PUT", "DELETE"]) {
-    const res = await request("/nope/deeper", { method });
+    const body = method === "POST" || method === "PUT" ? {} : undefined;
+    const res = await request("/nope/deeper", { method, body });
     assert.equal(res.status, 404, method);
   }
 });
