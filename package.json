@@ -6,7 +6,6 @@
     "dotenv": "^16.3.1",
     "express": "^4.22.3",
     "jsonwebtoken": "^9.0.3",
-    "nodemon": "^3.0.3",
     "pg-promise": "^11.15.0"
   },
   "scripts": {
@@ -28,5 +27,8 @@
     "url": "https://github.com/Irwinj7/Coinmatters-backened/issues"
   },
   "homepage": "https://github.com/Irwinj7/Coinmatters-backened#readme",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
 }
