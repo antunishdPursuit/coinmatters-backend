@@ -13,7 +13,8 @@
     "start": "node server.js",
     "dbinit": "psql -U postgres -f db/schema.sql",
     "dbseed": "psql -U postgres -f db/seed.sql",
-    "test": "node --test --test-concurrency=1 test/*.test.js"
+    "test": "node --test --test-concurrency=1 test/*.test.js",
+    "db:setup": "node db/setup.js"
   },
   "name": "project-coinmatters-backend",
   "version": "1.0.0",
