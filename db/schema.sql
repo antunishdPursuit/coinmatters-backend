@@ -33,10 +33,10 @@ CREATE TABLE IF NOT EXISTS retailers (
 
 CREATE TABLE IF NOT EXISTS products (
  product_id SERIAL PRIMARY KEY,
- product_name TEXT,
+ product_name TEXT NOT NULL,
  size TEXT,
- price DECIMAL,
- retailer_id INTEGER REFERENCES retailers(retailer_id),
+ price NUMERIC(10, 2) NOT NULL,
+ retailer_id INTEGER NOT NULL REFERENCES retailers(retailer_id),
  thumbnail TEXT
 );
 

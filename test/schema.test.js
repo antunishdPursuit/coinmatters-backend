@@ -26,3 +26,13 @@ test("a list's creation time is a required timestamp the database fills in", asy
   assert.equal(date.is_nullable, "NO");
   assert.equal(date.column_default, "now()");
 });
+
+test("every product has a name, a store and a price in dollars and cents", async () => {
+  const price = await column("products", "price");
+  assert.equal(price.data_type, "numeric");
+  assert.equal(price.numeric_precision, 10);
+  assert.equal(price.numeric_scale, 2);
+  assert.equal(price.is_nullable, "NO");
+  assert.equal((await column("products", "product_name")).is_nullable, "NO");
+  assert.equal((await column("products", "retailer_id")).is_nullable, "NO");
+});

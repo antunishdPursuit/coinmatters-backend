@@ -15,3 +15,17 @@ ALTER TABLE lists ALTER COLUMN date_created TYPE TIMESTAMPTZ USING date_created:
 UPDATE lists SET date_created = now() WHERE date_created IS NULL;
 ALTER TABLE lists ALTER COLUMN date_created SET DEFAULT now();
 ALTER TABLE lists ALTER COLUMN date_created SET NOT NULL;
+
+-- Every product has a name, a store and a price in dollars and cents.
+-- Changing the type would silently round prices with more decimals, so
+-- stop and say so instead.
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM products WHERE price <> round(price, 2)) THEN
+    RAISE EXCEPTION 'products.price has values with more than two decimals; fix them before running setup';
+  END IF;
+END $$;
+ALTER TABLE products ALTER COLUMN price TYPE NUMERIC(10, 2);
+ALTER TABLE products ALTER COLUMN price SET NOT NULL;
+ALTER TABLE products ALTER COLUMN product_name SET NOT NULL;
+ALTER TABLE products ALTER COLUMN retailer_id SET NOT NULL;
