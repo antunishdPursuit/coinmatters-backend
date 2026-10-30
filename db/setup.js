@@ -57,6 +57,11 @@ async function setUpAppAccount(t) {
     console.log("PG_ADMIN_USER is not set, so the app connects as the owner. Set it to give the app a limited account.");
     return;
   }
+  // Postgres reads an empty password as "no password", which would lock
+  // the app out while setup still reported success.
+  if (!process.env.PG_PASSWORD) {
+    throw new Error("PG_PASSWORD is empty. Set a password for the app account in .env.");
+  }
   const exists = await t.oneOrNone("SELECT 1 FROM pg_roles WHERE rolname = $1", appUser);
   const verb = exists ? "ALTER" : "CREATE";
   await t.none(
@@ -118,6 +123,10 @@ async function setup() {
 setup()
   .catch((error) => {
     console.error("Database setup failed, so nothing was changed:", error.message);
+    // 42501: Postgres insufficient_privilege
+    if (error.code === "42501") {
+      console.error("PG_ADMIN_USER must own the database and be allowed to create and manage roles (CREATEROLE).");
+    }
     process.exitCode = 1;
   })
   .finally(() => pgp.end());
