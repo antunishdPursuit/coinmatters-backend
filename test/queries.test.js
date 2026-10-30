@@ -2,6 +2,15 @@ const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const { request, newSession } = require("./helpers.js");
 
+test("prices are numbers, so they compare by value", async () => {
+  const products = (await request("/products")).json;
+  const priced = products.filter((p) => p.price !== null);
+  assert.ok(priced.length > 0);
+  for (const p of priced) assert.equal(typeof p.price, "number", p.product_name);
+  const one = await request(`/products/${priced[0].product_id}`);
+  assert.equal(typeof one.json.price, "number");
+});
+
 test("one product can be read by its id", async () => {
   const [first] = (await request("/products")).json;
   const res = await request(`/products/${first.product_id}`);
