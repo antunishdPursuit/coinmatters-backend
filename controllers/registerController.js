@@ -3,7 +3,8 @@ const userModel = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 
 function generateAuthToken(user) {
-  const payload = user;
+  // Only what the frontend needs; never the password hash.
+  const payload = { user_id: user.user_id, username: user.username, email: user.email };
   const secretKey = process.env.TOKEN_SECRET; 
   const options = { expiresIn: "1h" }; 
 
