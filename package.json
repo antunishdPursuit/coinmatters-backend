@@ -30,5 +30,10 @@
   "description": "",
   "devDependencies": {
     "nodemon": "^3.1.14"
+  },
+  "overrides": {
+    "qs": "6.16.1",
+    "encodeurl": "2.0.0",
+    "on-finished": "2.4.1"
   }
 }
