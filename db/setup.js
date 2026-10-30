@@ -3,6 +3,8 @@
 //   2. If there are no users yet, loads the sample data (seed.sql). Then
 //      replaces any plaintext password (the sample data has them) with a
 //      bcrypt hash.
+//   3. Moves each id counter past the highest id in its table, since the
+//      sample data sets some ids itself.
 // The database itself must already exist.
 require("dotenv").config({ quiet: true });
 const fs = require("fs");
@@ -24,6 +26,14 @@ const readSql = (name) =>
     .split(/\r?\n/)
     .filter((line) => !line.startsWith("\\"))
     .join("\n");
+
+// Each table's id column, whose counter must stay ahead of existing rows.
+const ID_COLUMNS = [
+  ["users", "user_id"],
+  ["lists", "list_id"],
+  ["retailers", "retailer_id"],
+  ["products", "product_id"],
+];
 
 const isBcryptHash = (value) => /^\$2[aby]\$\d{2}\$/.test(value);
 
@@ -50,6 +60,16 @@ async function setup() {
     }
     // Also catches plaintext passwords loaded by the old seed scripts.
     await hashSeedPasswords(t);
+
+    // The next id handed out is one past the highest in use (or 1 if the
+    // table is empty).
+    for (const [table, column] of ID_COLUMNS) {
+      await t.one(
+        "SELECT setval(pg_get_serial_sequence($1, $2), COALESCE(MAX($2:name), 1), MAX($2:name) IS NOT NULL) FROM $1:name",
+        [table, column]
+      );
+    }
+    console.log("Id counters are past the existing rows");
   });
 }
 
