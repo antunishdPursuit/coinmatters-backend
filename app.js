@@ -59,7 +59,7 @@ app.use("/lists", listsRouter);
 
 
 // 404 PAGE
-app.get("*", (req, res) => {
+app.get("/{*splat}", (req, res) => {
   res.status(404).send("Page not found");
 });
 
