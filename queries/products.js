@@ -1,21 +1,13 @@
 const db = require("../db/dbConfig.js");
 
-const getAllProducts = async () => {
-  try {
-  const allProducts = await db.any("SELECT * FROM products");
-  return allProducts;
-  } catch (err) {
-  return err;
-  }};
+// Database errors are not caught here: they reach the app's error handler,
+// which answers 500 without exposing the error.
 
-const getProduct = async (id) => {
-  try {
-    const oneProduct = await db.one("SELECT * FROM products WHERE product_id=$1", id);
-    return oneProduct;
-  } catch (error) {
-    return error;
-  }
-};
+const getAllProducts = () => db.any("SELECT * FROM products");
+
+// One product, or null if there is none
+const getProduct = (id) =>
+  db.oneOrNone("SELECT * FROM products WHERE product_id=$1", id);
 
 module.exports = {
   getAllProducts,

@@ -1,72 +1,32 @@
 const db = require("../db/dbConfig.js");
 
-const getUserLists = async (user_id) => {
-    try {
-      const userLists = await db.any(
-      "SELECT * FROM lists WHERE user_id=$1",
-      user_id
-      );
-      return userLists;
-    } catch (err) {
-      return err;
-    }};
+// Database errors are not caught here: they reach the app's error handler,
+// which answers 500 without exposing the error.
 
-const getList = async (id) => {
-  try {
-    const oneList = await db.one("SELECT * FROM lists WHERE list_id = $1", id);
-    return oneList;
-  } catch (error) {
-    return error;
-  }
-};
+const getUserLists = (user_id) =>
+  db.any("SELECT * FROM lists WHERE user_id=$1", user_id);
 
-const newList = async (list) => {
-  try {
-    const newList = await db.one(
-      "INSERT INTO lists (user_id, list_name, products, note, date_created) VALUES($1, $2, $3, $4, $5) RETURNING *",
-      [
-        list.user_id,
-        list.list_name,
-        list.products,
-        list.note,
-        list.date_created
-      ]
-    );
-    return newList;
-  } catch (error) {
-    return error;
-  }
-};
+// One list, or null if there is none
+const getList = (id) =>
+  db.oneOrNone("SELECT * FROM lists WHERE list_id = $1", id);
 
+const newList = (list) =>
+  db.one(
+    "INSERT INTO lists (user_id, list_name, products, note, date_created) VALUES($1, $2, $3, $4, $5) RETURNING *",
+    [list.user_id, list.list_name, list.products, list.note, list.date_created]
+  );
 
-const deleteList = async (id) => {
-  try {
-    const deletedList = await db.one(
-      "DELETE FROM lists WHERE list_id=$1 RETURNING *",
-      id
-    );
-    return deletedList;
-  } catch (error) {
-    return error;
-  }
-};
+// The deleted list, or null if there was none
+const deleteList = (id) =>
+  db.oneOrNone("DELETE FROM lists WHERE list_id=$1 RETURNING *", id);
 
-const updateList = async (id, list) => {
-  try {
-    const updatedList = await db.one(
-      "UPDATE lists SET list_name=$1, products=$2, note=$3 WHERE list_id=$4 RETURNING *",
-      [
-        list.list_name,
-        list.products,
-        list.note, 
-        id
-      ]
-    );
-    return updatedList;
-  } catch (error) {
-    return error;
-  }
-};
+// The updated list, or null if there was none
+const updateList = (id, list) =>
+  db.oneOrNone(
+    "UPDATE lists SET list_name=$1, products=$2, note=$3 WHERE list_id=$4 RETURNING *",
+    [list.list_name, list.products, list.note, id]
+  );
+
 module.exports = {
   getUserLists,
   getList,

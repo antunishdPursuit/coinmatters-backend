@@ -55,8 +55,24 @@ app.use("/lists", listsRouter);
 
 
 // 404 PAGE
-app.get("/{*splat}", (req, res) => {
+app.use((req, res) => {
   res.status(404).send("Page not found");
+});
+
+// ERRORS
+// Express sends thrown errors and rejected promises here. A request the
+// server could not read (such as broken JSON) gets its 4xx status; anything
+// else is a 500 whose details stay in the server log.
+app.use((err, req, res, next) => {
+  // A response already under way can't change its status; let Express end it.
+  if (res.headersSent) {
+    return next(err);
+  }
+  if (err.status >= 400 && err.status < 500) {
+    return res.status(err.status).json({ error: "Invalid request" });
+  }
+  console.error(err);
+  res.status(500).json({ error: "Internal server error" });
 });
 
 // EXPORT

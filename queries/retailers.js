@@ -1,24 +1,14 @@
 const db = require("../db/dbConfig.js");
 
-// ALL Retailers
-const getAllRetailers = async () => {
-    try {
-      const allRetailers = await db.any("SELECT * FROM retailers");
-      return allRetailers;
-    } catch (error) {
-      return error;
-    }
-};
+// Database errors are not caught here: they reach the app's error handler,
+// which answers 500 without exposing the error.
 
-// ONE Retailer
-const getRetailer = async (id) => {
-  try {
-    const oneRetailer = await db.one("SELECT * FROM retailers WHERE retailer_id=$1", id);
-    return oneRetailer;
-  } catch (error) {
-    return error;
-  }
-};
+// ALL Retailers
+const getAllRetailers = () => db.any("SELECT * FROM retailers");
+
+// ONE Retailer, or null if there is none
+const getRetailer = (id) =>
+  db.oneOrNone("SELECT * FROM retailers WHERE retailer_id=$1", id);
 
 module.exports = {
   getAllRetailers,

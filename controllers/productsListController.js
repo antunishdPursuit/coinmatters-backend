@@ -1,30 +1,22 @@
 const express = require("express");
 
-const products = express.Router({ mergeParams: true });
+const products = express.Router();
 const { getAllProducts, getProduct } = require("../queries/products.js");
+const { checkIds } = require("../validations/ids.js");
 
 // INDEX
 products.get("/", async (req, res) => {
-    const { listId } = req.params;
-
-    try {
-      const allProducts = await getAllProducts(listId);
-      res.json(allProducts);
-    } catch (err) {
-      res.json(err);
-    }
-  });
+  res.json(await getAllProducts());
+});
 
 // SHOW
-products.get("/:id", async (req, res) => {
-  const { id } = req.params;
-  const product = await getProduct(id);
+products.get("/:id", checkIds("id"), async (req, res) => {
+  const product = await getProduct(req.params.id);
   if (product) {
     res.json(product);
   } else {
     res.status(404).json({ error: "not found" });
   }
 });
-
 
 module.exports = products;
