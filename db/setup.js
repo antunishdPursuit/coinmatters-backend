@@ -5,8 +5,10 @@
 //      bcrypt hash.
 //   3. Moves each id counter past the highest id in its table, since the
 //      sample data sets some ids itself.
-// It connects as the database owner (PG_ADMIN_USER, or PG_USER if that is
-// not set). The database itself must already exist.
+//   4. Creates the app's own database account (PG_USER) with only the
+//      access the app needs, or updates its password and access.
+// It connects as the database owner (PG_ADMIN_USER). The database itself
+// must already exist.
 require("dotenv").config({ quiet: true });
 const fs = require("fs");
 const path = require("path");
@@ -17,6 +19,7 @@ const admin = {
   user: process.env.PG_ADMIN_USER || process.env.PG_USER,
   password: process.env.PG_ADMIN_PASSWORD || process.env.PG_PASSWORD,
 };
+const appUser = process.env.PG_USER;
 
 const db = pgp({
   host: process.env.PG_HOST,
@@ -39,6 +42,38 @@ const ID_COLUMNS = [
   ["retailers", "retailer_id"],
   ["products", "product_id"],
 ];
+
+// What the app's account may do. Anything not listed is refused, such as
+// deleting users, changing products or altering tables.
+const APP_GRANTS = [
+  "GRANT SELECT, INSERT ON users TO $1:name",
+  "GRANT SELECT, INSERT, UPDATE, DELETE ON lists TO $1:name",
+  "GRANT SELECT ON retailers, products TO $1:name",
+  "GRANT USAGE ON SEQUENCE users_user_id_seq, lists_list_id_seq TO $1:name",
+];
+
+async function setUpAppAccount(t) {
+  if (!appUser || appUser === admin.user) {
+    console.log("PG_ADMIN_USER is not set, so the app connects as the owner. Set it to give the app a limited account.");
+    return;
+  }
+  const exists = await t.oneOrNone("SELECT 1 FROM pg_roles WHERE rolname = $1", appUser);
+  const verb = exists ? "ALTER" : "CREATE";
+  await t.none(
+    `${verb} ROLE $1:name WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD $2`,
+    [appUser, process.env.PG_PASSWORD]
+  );
+  // Start from nothing, so reruns also take away access no longer listed.
+  await t.none("REVOKE ALL ON DATABASE $2:name FROM $1:name", [appUser, process.env.PG_DATABASE]);
+  await t.none("REVOKE ALL ON ALL TABLES IN SCHEMA public FROM $1:name", appUser);
+  await t.none("REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM $1:name", appUser);
+  await t.none("GRANT CONNECT ON DATABASE $2:name TO $1:name", [appUser, process.env.PG_DATABASE]);
+  await t.none("GRANT USAGE ON SCHEMA public TO $1:name", appUser);
+  for (const grant of APP_GRANTS) {
+    await t.none(grant, appUser);
+  }
+  console.log(`App account ${appUser} is ${exists ? "up to date" : "created"}`);
+}
 
 const isBcryptHash = (value) => /^\$2[aby]\$\d{2}\$/.test(value);
 
@@ -75,6 +110,8 @@ async function setup() {
       );
     }
     console.log("Id counters are past the existing rows");
+
+    await setUpAppAccount(t);
   });
 }
 
