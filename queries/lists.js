@@ -1,14 +1,5 @@
 const db = require("../db/dbConfig.js");
 
-const getAllLists = async () => {
-    try {
-    const allLists = await db.any(
-    "SELECT * FROM lists");
-    return allLists;
-    } catch (err) {
-    return err;
-    }};
-
 const getUserLists = async (user_id) => {
     try {
       const userLists = await db.any(
@@ -48,25 +39,6 @@ const newList = async (list) => {
 };
 
 
-const newUserList = async (list) => {
-  try {
-    const userList = await db.one(
-      "INSERT INTO lists (user_id, list_name, products, note, date_created) VALUES($1, $2, $3, $4, $5) RETURNING *",
-      [
-        list.user_id,
-        list.list_name,
-        list.products,
-        list.note,
-        list.date_created
-      ]
-    );
-    return userList;
-  } catch (error) {
-    return error;
-  }
-};
-
-
 const deleteList = async (id) => {
   try {
     const deletedList = await db.one(
@@ -96,11 +68,9 @@ const updateList = async (id, list) => {
   }
 };
 module.exports = {
-  getAllLists,
   getUserLists,
   getList,
   newList,
-  newUserList,
   deleteList,
   updateList,
 };

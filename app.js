@@ -39,10 +39,6 @@ app.get('/check-login', checkLoginMiddleware, registerController.checkLogin)
 app.post('/logout', logOutVerify, registerController.logOut)
 
 
-// Users ROUTES
-const usersController = require("./controllers/usersController.js");
-app.use("/users", usersController);
-
 // Products ROUTE
 const productsController = require("./controllers/productsListController.js");
 app.use("/products", productsController);
