@@ -1,3 +1,7 @@
+// Load .env here too, so the settings below don't depend on which module
+// happens to load it first (the tests require app.js without server.js).
+require("dotenv").config({ quiet: true });
+
 const { requireLogin } = require("./verification/checkAuth");
 const { loginLimiter, registerLimiter } = require("./verification/rateLimits");
 const { validate, registerProblem, loginProblem } = require("./validations/input");
@@ -11,6 +15,8 @@ const CookieParser = require("cookie-parser");
 
 // CONFIGURATION
 const app = express();
+// Don't advertise the framework in every response.
+app.disable("x-powered-by");
 
 const originURL = process.env.ORIGIN_URL; 
 
@@ -21,13 +27,6 @@ app.use(cors({
   origin : originURL,
   credentials: true,
 }))
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', `${originURL}`);
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  next();
-});
 
 // Requests that change data must be JSON. Another site can only send JSON
 // here after a CORS check that it fails, so this blocks forged form posts.

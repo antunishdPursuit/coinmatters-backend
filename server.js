@@ -4,10 +4,13 @@ require("dotenv").config({ quiet: true });
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;
 
-// Sessions are signed with this secret; refuse to start without one.
-if (!process.env.TOKEN_SECRET) {
-  console.error("TOKEN_SECRET is not set. Add it to .env before starting the server.");
-  process.exit(1);
+// Sessions are signed with TOKEN_SECRET, and ORIGIN_URL is the only site
+// allowed to call the API. Refuse to start without either.
+for (const name of ["TOKEN_SECRET", "ORIGIN_URL"]) {
+  if (!process.env[name]) {
+    console.error(`${name} is not set. Add it to .env before starting the server.`);
+    process.exit(1);
+  }
 }
 
 // DEPENDENCIES
