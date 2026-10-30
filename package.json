@@ -18,15 +18,15 @@
   "main": "server.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Irwinj7/Coinmatters-backened.git"
+    "url": "git+https://github.com/antunishdPursuit/Coinmatters-backened.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Irwinj7/Coinmatters-backened/issues"
+    "url": "https://github.com/antunishdPursuit/Coinmatters-backened/issues"
   },
-  "homepage": "https://github.com/Irwinj7/Coinmatters-backened#readme",
+  "homepage": "https://github.com/antunishdPursuit/Coinmatters-backened#readme",
   "description": "",
   "devDependencies": {
     "nodemon": "^3.1.14"
