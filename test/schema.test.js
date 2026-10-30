@@ -19,3 +19,10 @@ test("every list has an owner, and lists are indexed by owner", async () => {
   assert.ok(index, "lists_user_id_idx is missing");
   assert.match(index.indexdef, /\(user_id\)/);
 });
+
+test("a list's creation time is a required timestamp the database fills in", async () => {
+  const date = await column("lists", "date_created");
+  assert.equal(date.data_type, "timestamp with time zone");
+  assert.equal(date.is_nullable, "NO");
+  assert.equal(date.column_default, "now()");
+});

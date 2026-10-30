@@ -52,7 +52,7 @@ test("login rejects malformed input with 400 and wrong details with 401", async 
 
 test("lists reject bad input with 400", async () => {
   const { user_id, cookie } = await newSession();
-  const good = { list_name: "Groceries", products: ["milk"], note: "", date_created: "2026-10-30" };
+  const good = { list_name: "Groceries", products: ["milk"], note: "" };
   const bad = [
     {},
     { ...good, list_name: "" },
@@ -60,7 +60,6 @@ test("lists reject bad input with 400", async () => {
     { ...good, products: "milk" },
     { ...good, products: [1, 2] },
     { ...good, note: "x".repeat(256) },
-    { ...good, date_created: { day: 1 } },
   ];
   for (const body of bad) {
     const res = await request(`/lists/${user_id}`, { method: "POST", cookie, body });

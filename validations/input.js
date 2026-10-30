@@ -42,9 +42,7 @@ const listProblem = (body = {}) => {
   if (body.note !== undefined && body.note !== null && !isText(body.note, 0, 255)) {
     return "Note must be at most 255 characters";
   }
-  if (body.date_created !== undefined && body.date_created !== null && !isText(body.date_created, 0, 50)) {
-    return "Invalid date";
-  }
+  // date_created is ignored: the server records when a list was created.
   return null;
 };
 

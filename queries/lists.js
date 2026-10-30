@@ -10,10 +10,11 @@ const getUserLists = (user_id) =>
 const getList = (id) =>
   db.oneOrNone("SELECT * FROM lists WHERE list_id = $1", id);
 
+// date_created is set by the database, not the client.
 const newList = (list) =>
   db.one(
-    "INSERT INTO lists (user_id, list_name, products, note, date_created) VALUES($1, $2, $3, $4, $5) RETURNING *",
-    [list.user_id, list.list_name, list.products, list.note, list.date_created]
+    "INSERT INTO lists (user_id, list_name, products, note) VALUES($1, $2, $3, $4) RETURNING *",
+    [list.user_id, list.list_name, list.products, list.note]
   );
 
 // The deleted list, or null if the user has no list with that id

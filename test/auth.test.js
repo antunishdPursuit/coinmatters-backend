@@ -3,7 +3,7 @@ const assert = require("node:assert/strict");
 const jwt = require("jsonwebtoken");
 const { request, newSession } = require("./helpers.js");
 
-const listBody = { list_name: "Groceries", products: ["milk"], note: "", date_created: "2026-10-30" };
+const listBody = { list_name: "Groceries", products: ["milk"], note: "" };
 
 test("/user and /check-login need a valid session", async () => {
   for (const path of ["/user", "/check-login"]) {

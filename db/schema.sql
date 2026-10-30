@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS lists (
  list_name TEXT NOT NULL,
  products TEXT[],
  note VARCHAR(255),
- date_created TEXT
+ date_created TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- The app looks up lists by their owner.

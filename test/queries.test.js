@@ -24,7 +24,7 @@ test("a list can be renamed and its items and note changed", async () => {
   const created = await request(`/lists/${session.user_id}`, {
     method: "POST",
     cookie: session.cookie,
-    body: { list_name: "Groceries", products: ["milk"], note: "", date_created: "2026-10-30" },
+    body: { list_name: "Groceries", products: ["milk"], note: "" },
   });
   assert.equal(created.status, 200);
 
@@ -39,4 +39,21 @@ test("a list can be renamed and its items and note changed", async () => {
   assert.equal(updated.json.list_name, "Weekly shop");
   assert.deepEqual(updated.json.products, ["milk", "eggs"]);
   assert.equal(updated.json.note, "Saturday");
+  // Editing a list keeps its creation time.
+  assert.equal(updated.json.date_created, created.json.date_created);
+});
+
+test("the server records when a list was created and ignores a sent date", async () => {
+  const session = await newSession();
+  const before = Date.now();
+  const created = await request(`/lists/${session.user_id}`, {
+    method: "POST",
+    cookie: session.cookie,
+    body: { list_name: "Groceries", products: [], note: "", date_created: "1999-01-01" },
+  });
+  assert.equal(created.status, 200);
+  // Sent as an ISO timestamp the browser can read with new Date(...).
+  assert.match(created.json.date_created, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/);
+  const createdAt = new Date(created.json.date_created).getTime();
+  assert.ok(Math.abs(createdAt - before) < 60_000, `created at ${created.json.date_created}`);
 });

@@ -41,7 +41,6 @@ lists.post("/:user_id", checkIds("user_id"), requireOwnUser, validate(listProble
     list_name: req.body.list_name,
     products: req.body.products,
     note: req.body.note,
-    date_created: req.body.date_created,
   };
   const createdList = await newList(newListData);
   res.status(200).json(createdList);
