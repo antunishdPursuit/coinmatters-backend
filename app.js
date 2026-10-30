@@ -1,4 +1,4 @@
-const { requireLogin, logOutVerify } = require("./verification/checkAuth");
+const { requireLogin } = require("./verification/checkAuth");
 
 // DEPENDENCIES
 const cors = require("cors");
@@ -27,6 +27,16 @@ app.use((req, res, next) => {
   next();
 });
 
+// Requests that change data must be JSON. Another site can only send JSON
+// here after a CORS check that it fails, so this blocks forged form posts.
+app.use((req, res, next) => {
+  const type = (req.headers["content-type"] || "").split(";")[0].trim().toLowerCase();
+  if (["GET", "HEAD", "OPTIONS"].includes(req.method) || type === "application/json") {
+    return next();
+  }
+  res.status(415).json({ error: "Requests that change data must be JSON" });
+});
+
 // ROUTES
 app.get("/", (req, res) => {
   res.send("Welcome to CoinMatters App, where ya coin really matters");
@@ -36,7 +46,7 @@ app.post('/register', registerController.registerUser);
 app.post('/login', registerController.loginUser);
 app.get('/user', requireLogin, registerController.userData)
 app.get('/check-login', requireLogin, registerController.checkLogin)
-app.post('/logout', logOutVerify, registerController.logOut)
+app.post('/logout', registerController.logOut)
 
 
 // Products ROUTE

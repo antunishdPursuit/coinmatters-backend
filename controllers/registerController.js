@@ -2,11 +2,18 @@ const bcrypt = require("bcrypt");
 const userModel = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 
+// The session cookie and the token inside it expire together.
+const SESSION_SECONDS = 60 * 60;
+// SameSite=Lax keeps other sites' forms and links from sending the cookie
+// with requests that change data. The frontend and API share a site, so
+// its own requests still carry it.
+const COOKIE_OPTIONS = { httpOnly: true, secure: true, sameSite: "lax", path: "/" };
+
 function generateAuthToken(user) {
   // Only what the frontend needs; never the password hash.
   const payload = { user_id: user.user_id, username: user.username, email: user.email };
   const secretKey = process.env.TOKEN_SECRET; 
-  const options = { expiresIn: "1h" }; 
+  const options = { expiresIn: SESSION_SECONDS };
 
   return jwt.sign(payload, secretKey, options);
 }
@@ -42,8 +49,7 @@ class UserController {
       }
 
       const token = generateAuthToken(user);
-      res.cookie("dataToken", token, { maxAge: 900000, httpOnly: true, sameSite: 'None',
-      secure: true});
+      res.cookie("dataToken", token, { ...COOKIE_OPTIONS, maxAge: SESSION_SECONDS * 1000 });
       console.log("Login Successful")
       res.status(200).json("Cookie Set");
     } catch (error) {
@@ -62,7 +68,7 @@ class UserController {
 
   async logOut(req,res){
     // Clear the 'dataToken' cookie on the client-side
-    res.clearCookie('dataToken', { sameSite: 'None', secure: true, httpOnly: true });
+    res.clearCookie('dataToken', COOKIE_OPTIONS);
 
     // Send a response indicating successful logout
     return res.status(200).json({ message: 'Logout successful' });

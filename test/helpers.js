@@ -24,14 +24,15 @@ after(async () => {
   await db.$pool.end();
 });
 
-// Sends a request to the test server. A JSON body is sent with a JSON
-// content type unless the caller sets its own headers.
+// Sends a request to the test server. Requests other than GET are sent
+// with a JSON content type unless the caller sets their own.
 async function request(path, { method = "GET", body, cookie, headers = {} } = {}) {
   const init = { method, headers: { ...headers } };
   if (body !== undefined) {
     init.body = typeof body === "string" ? body : JSON.stringify(body);
-    init.headers["Content-Type"] ??= "application/json";
   }
+  // Like the frontend, send every request that changes data as JSON.
+  if (method !== "GET") init.headers["Content-Type"] ??= "application/json";
   if (cookie) init.headers.Cookie = cookie;
   const res = await fetch(baseUrl + path, init);
   const text = await res.text();
@@ -43,6 +44,9 @@ async function request(path, { method = "GET", body, cookie, headers = {} } = {}
   }
   return { status: res.status, headers: res.headers, text, json };
 }
+
+// The full URL of a path on the test server, for raw fetch calls.
+const url = (path) => baseUrl + path;
 
 // Registers a new user with a unique name and email.
 async function registerUser() {
@@ -73,4 +77,4 @@ async function newSession() {
   return { ...user, ...me.json.authorizedData, cookie };
 }
 
-module.exports = { db, request, registerUser, logIn, newSession, TEST_PASSWORD };
+module.exports = { db, url, request, registerUser, logIn, newSession, TEST_PASSWORD };

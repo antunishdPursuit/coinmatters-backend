@@ -17,15 +17,4 @@ const requireLogin = (req, res, next) => {
     });
 };
 
-const logOutVerify = (req, res, next) => {
-    try {
-        // Clear the "dataToken" cookie on the server side
-        res.clearCookie('dataToken', { httpOnly: true });
-        next()
-      } catch (error) {
-        console.error('Error logging out:', error);
-        res.status(500).json({ error: 'Internal server error' });
-      }
-}
-
-module.exports = { requireLogin, logOutVerify };
+module.exports = { requireLogin };
