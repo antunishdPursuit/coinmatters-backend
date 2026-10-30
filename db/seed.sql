@@ -2,12 +2,12 @@
 
 INSERT INTO users (username, email, password, created_at) VALUES 
 ('testuser', 'testuser@example.com', 'password123', CURRENT_TIMESTAMP),
-('Irwin Jorge', 'irwinj@example.com', 'irwinrocks123!', CURRENT_TIMESTAMP),
-('Lakisha Johnson', 'lakishaj@example.com', 'LakishaRocks123!', CURRENT_TIMESTAMP),
-('Noni Porter', 'nonip@example.com', 'NoniRocks123!', CURRENT_TIMESTAMP),
-('Dennys Antunish', 'dennysa@example.com', 'DennysRocks123!', CURRENT_TIMESTAMP),
-('John Goodman', 'johng@example.com', 'JohnRocks123!', CURRENT_TIMESTAMP),
-('Ahmad Hamoudeh', 'ahmadh@example.com', 'AhmadRocks123!', CURRENT_TIMESTAMP);
+('Irwin_Jorge', 'irwinj@example.com', 'irwinrocks123!', CURRENT_TIMESTAMP),
+('Lakisha_Johnson', 'lakishaj@example.com', 'LakishaRocks123!', CURRENT_TIMESTAMP),
+('Noni_Porter', 'nonip@example.com', 'NoniRocks123!', CURRENT_TIMESTAMP),
+('Dennys_Antunish', 'dennysa@example.com', 'DennysRocks123!', CURRENT_TIMESTAMP),
+('John_Goodman', 'johng@example.com', 'JohnRocks123!', CURRENT_TIMESTAMP),
+('Ahmad_Hamoudeh', 'ahmadh@example.com', 'AhmadRocks123!', CURRENT_TIMESTAMP);
 
 INSERT INTO lists (user_id, list_name, products, note, date_created) VALUES
 (4, 'Grocery List', ARRAY['Product1', 'Product2', 'Product3'], 'every day groceries', '2024-01-16T15:05:41.139Z'),

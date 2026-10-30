@@ -2,7 +2,8 @@
 //   1. Creates any missing tables (schema.sql).
 //   2. If there are no users yet, loads the sample data (seed.sql). Then
 //      replaces any plaintext password (the sample data has them) with a
-//      bcrypt hash, and stores every email in lowercase, as login expects.
+//      bcrypt hash, stores every email in lowercase, as login expects, and
+//      replaces spaces in usernames, which appear in page addresses.
 //   3. Moves each id counter past the highest id in its table, since the
 //      sample data sets some ids itself.
 //   4. Creates the app's own database account (PG_USER) with only the
@@ -107,6 +108,16 @@ async function setup() {
     await hashSeedPasswords(t);
     // Login lowercases the email it is given, so stored ones must match.
     await t.none("UPDATE users SET email = lower(trim(email)) WHERE email <> lower(trim(email))");
+    // Registration doesn't allow spaces in usernames; older rows had them.
+    // Leading and trailing whitespace (tabs too) is dropped; inner runs become "_".
+    await t.none("UPDATE users SET username = regexp_replace(regexp_replace(username, '^[[:space:]]+|[[:space:]]+$', '', 'g'), '[[:space:]]+', '_', 'g') WHERE username ~ '[[:space:]]'");
+    // Anything still breaking the registration rules (such as a name that
+    // was only spaces) needs a person to rename it, so stop and say which.
+    const badNames = await t.any("SELECT user_id, username FROM users WHERE username !~ '^[A-Za-z0-9_.-]{3,30}$'");
+    if (badNames.length) {
+      const list = badNames.map((u) => `${u.user_id} "${u.username}"`).join(", ");
+      throw new Error(`These usernames break the registration rules: ${list}. Rename them, then run setup again.`);
+    }
 
     // The next id handed out is one past the highest in use (or 1 if the
     // table is empty).
