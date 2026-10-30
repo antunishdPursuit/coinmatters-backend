@@ -78,14 +78,6 @@ INSERT INTO products (product_id, product_name, size, price, retailer_id, thumbn
 (58,'Perdue Breaded Chicken Breast Cutlets', '12 Ounces', 4.46, 3, 'https://i5.walmartimages.com/seo/Perdue-No-Antibiotics-Ever-Refrigerated-Breaded-Chicken-Breast-Cutlets-12-oz-Tray_358a6e27-7077-4579-b466-beea2f774cfc.fd4d313bd3a699eda2bbbc47a2818666.jpeg?odnHeight=117&odnWidth=117&odnBg=FFFFFF'),
 (59,'Oscar Mayer Chicken Breast, Rotisserie Seasoned', '9 Ounces', 4.48, 3, 'https://db535g4onu9gg.cloudfront.net/eyJidWNrZXQiOiJtZXJjYXRvLWltYWdlcyIsImVkaXRzIjp7InJlc2l6ZSI6eyJmaXQiOiJpbnNpZGUiLCJ3aWR0aCI6MjgwLCJoZWlnaHQiOjE4N319LCJrZXkiOiJwcm9kdWN0-LW');
 
--- INSERT INTO products_list (product_id, list_id, quantity) VALUES
--- (1, 1, 2),
--- (4, 1, 1),
--- (10, 2, 1),
--- (3, 3, 1),
--- (2, 3, 1),
--- (1, 4, 1);
-
 
 
 --- Product in products thumbnail link is being truncated by psql,

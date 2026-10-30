@@ -36,3 +36,8 @@ test("every product has a name, a store and a price in dollars and cents", async
   assert.equal((await column("products", "product_name")).is_nullable, "NO");
   assert.equal((await column("products", "retailer_id")).is_nullable, "NO");
 });
+
+test("the unused products_list table is gone", async () => {
+  const { exists } = await db.one("SELECT to_regclass('public.products_list') IS NOT NULL AS exists");
+  assert.equal(exists, false);
+});

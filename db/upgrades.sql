@@ -29,3 +29,15 @@ ALTER TABLE products ALTER COLUMN price TYPE NUMERIC(10, 2);
 ALTER TABLE products ALTER COLUMN price SET NOT NULL;
 ALTER TABLE products ALTER COLUMN product_name SET NOT NULL;
 ALTER TABLE products ALTER COLUMN retailer_id SET NOT NULL;
+
+-- Lists keep their items as names in lists.products; products_list was
+-- never used. It is dropped only while empty, so no data can be lost.
+DO $$
+BEGIN
+  IF to_regclass('public.products_list') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM products_list) THEN
+      RAISE EXCEPTION 'products_list has rows; move or delete them before running setup';
+    END IF;
+    DROP TABLE products_list;
+  END IF;
+END $$;

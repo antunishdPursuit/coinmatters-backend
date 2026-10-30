@@ -39,13 +39,3 @@ CREATE TABLE IF NOT EXISTS products (
  retailer_id INTEGER NOT NULL REFERENCES retailers(retailer_id),
  thumbnail TEXT
 );
-
-CREATE TABLE IF NOT EXISTS products_list (
-  product_id INTEGER,
-  list_id INTEGER,
-  quantity INTEGER,
-  PRIMARY KEY (product_id, list_id),
-  FOREIGN KEY (product_id) REFERENCES products(product_id),
-  FOREIGN KEY (list_id) REFERENCES lists(list_id)
-  ON DELETE CASCADE
-);

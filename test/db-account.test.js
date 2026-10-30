@@ -33,7 +33,6 @@ test("the app's database account has only the access it needs", { skip: !separat
   await refused(db.none("UPDATE users SET password = password WHERE false"));
   await refused(db.none("UPDATE products SET price = price WHERE false"));
   await refused(db.none("DELETE FROM retailers WHERE false"));
-  await refused(db.none("SELECT * FROM products_list LIMIT 1"));
   await refused(db.none("INSERT INTO products (product_name) SELECT 'x' WHERE false"));
   await refused(db.none("INSERT INTO retailers (retailer_name, website) SELECT 'x', 'x' WHERE false"));
   // nextval checks access only when it runs, so this one really runs.
