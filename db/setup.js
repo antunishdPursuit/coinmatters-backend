@@ -2,7 +2,7 @@
 //   1. Creates any missing tables (schema.sql).
 //   2. If there are no users yet, loads the sample data (seed.sql). Then
 //      replaces any plaintext password (the sample data has them) with a
-//      bcrypt hash.
+//      bcrypt hash, and stores every email in lowercase, as login expects.
 //   3. Moves each id counter past the highest id in its table, since the
 //      sample data sets some ids itself.
 //   4. Creates the app's own database account (PG_USER) with only the
@@ -105,6 +105,8 @@ async function setup() {
     }
     // Also catches plaintext passwords loaded by the old seed scripts.
     await hashSeedPasswords(t);
+    // Login lowercases the email it is given, so stored ones must match.
+    await t.none("UPDATE users SET email = lower(trim(email)) WHERE email <> lower(trim(email))");
 
     // The next id handed out is one past the highest in use (or 1 if the
     // table is empty).
@@ -126,6 +128,10 @@ setup()
     // 42501: Postgres insufficient_privilege
     if (error.code === "42501") {
       console.error("PG_ADMIN_USER must own the database and be allowed to create and manage roles (CREATEROLE).");
+    }
+    // 23505: Postgres unique_violation, e.g. two emails that differ only by case
+    if (error.code === "23505") {
+      console.error("Two users would end up with the same email or username (" + error.detail.replace(/[.]$/, "") + "). Change one of them, then run setup again.");
     }
     process.exitCode = 1;
   })
