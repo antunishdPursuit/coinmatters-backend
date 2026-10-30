@@ -1,4 +1,4 @@
-const { checkToken, checkLoginMiddleware, logOutVerify } = require("./verification/checkAuth") 
+const { requireLogin, logOutVerify } = require("./verification/checkAuth");
 
 // DEPENDENCIES
 const cors = require("cors");
@@ -34,8 +34,8 @@ app.get("/", (req, res) => {
 
 app.post('/register', registerController.registerUser);
 app.post('/login', registerController.loginUser);
-app.get('/user', checkToken, registerController.userData)
-app.get('/check-login', checkLoginMiddleware, registerController.checkLogin)
+app.get('/user', requireLogin, registerController.userData)
+app.get('/check-login', requireLogin, registerController.checkLogin)
 app.post('/logout', logOutVerify, registerController.logOut)
 
 

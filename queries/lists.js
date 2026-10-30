@@ -16,15 +16,15 @@ const newList = (list) =>
     [list.user_id, list.list_name, list.products, list.note, list.date_created]
   );
 
-// The deleted list, or null if there was none
-const deleteList = (id) =>
-  db.oneOrNone("DELETE FROM lists WHERE list_id=$1 RETURNING *", id);
+// The deleted list, or null if the user has no list with that id
+const deleteList = (id, user_id) =>
+  db.oneOrNone("DELETE FROM lists WHERE list_id=$1 AND user_id=$2 RETURNING *", [id, user_id]);
 
-// The updated list, or null if there was none
-const updateList = (id, list) =>
+// The updated list, or null if the user has no list with that id
+const updateList = (id, user_id, list) =>
   db.oneOrNone(
-    "UPDATE lists SET list_name=$1, products=$2, note=$3 WHERE list_id=$4 RETURNING *",
-    [list.list_name, list.products, list.note, id]
+    "UPDATE lists SET list_name=$1, products=$2, note=$3 WHERE list_id=$4 AND user_id=$5 RETURNING *",
+    [list.list_name, list.products, list.note, id, user_id]
   );
 
 module.exports = {

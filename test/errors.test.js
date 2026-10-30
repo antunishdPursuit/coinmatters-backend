@@ -20,7 +20,7 @@ test("ids that are not whole numbers get 400", async () => {
 
 test("missing records get 404", async () => {
   const { user_id, cookie } = await newSession();
-  for (const path of ["/products/999999", "/retailer/999999", "/lists/user/999999"]) {
+  for (const path of ["/products/999999", "/retailer/999999"]) {
     const res = await request(path, { cookie });
     assert.equal(res.status, 404, path);
     assertNoDatabaseError(res);

@@ -9,9 +9,21 @@ const {
   updateList,
 } = require("../queries/lists.js");
 const { checkIds } = require("../validations/ids.js");
+const { requireLogin } = require("../verification/checkAuth.js");
+
+// The user_id in the path must be the logged-in user's own.
+const requireOwnUser = (req, res, next) => {
+  if (Number(req.params.user_id) !== req.user.user_id) {
+    return res.status(403).json({ error: "Not allowed" });
+  }
+  next();
+};
+
+// Every lists route needs a logged-in user.
+lists.use(requireLogin);
 
 // SHOW a user and their lists
-lists.get("/user/:user_id", checkIds("user_id"), async (req, res) => {
+lists.get("/user/:user_id", checkIds("user_id"), requireOwnUser, async (req, res) => {
   const { user_id } = req.params;
   const user = await getUser(user_id);
   if (!user) {
@@ -21,11 +33,10 @@ lists.get("/user/:user_id", checkIds("user_id"), async (req, res) => {
   res.json({ user, lists: userLists });
 });
 
-// CREATE a list for a user
-lists.post("/:user_id", checkIds("user_id"), async (req, res) => {
-  const { user_id } = req.params;
+// CREATE a list for the logged-in user
+lists.post("/:user_id", checkIds("user_id"), requireOwnUser, async (req, res) => {
   const newListData = {
-    user_id,
+    user_id: req.user.user_id,
     list_name: req.body.list_name,
     products: req.body.products,
     note: req.body.note,
@@ -36,14 +47,14 @@ lists.post("/:user_id", checkIds("user_id"), async (req, res) => {
 });
 
 // UPDATE a list for a specific user
-lists.put("/user/:user_id/:id", checkIds("user_id", "id"), async (req, res) => {
+lists.put("/user/:user_id/:id", checkIds("user_id", "id"), requireOwnUser, async (req, res) => {
   const { id } = req.params;
   const updatedListData = {
     list_name: req.body.list_name,
     products: req.body.products,
     note: req.body.note,
   };
-  const updatedList = await updateList(id, updatedListData);
+  const updatedList = await updateList(id, req.user.user_id, updatedListData);
   if (!updatedList) {
     return res.status(404).json({ error: "List not found" });
   }
@@ -51,9 +62,9 @@ lists.put("/user/:user_id/:id", checkIds("user_id", "id"), async (req, res) => {
 });
 
 // DELETE a list for a specific user
-lists.delete("/user/:user_id/:id", checkIds("user_id", "id"), async (req, res) => {
+lists.delete("/user/:user_id/:id", checkIds("user_id", "id"), requireOwnUser, async (req, res) => {
   const { id } = req.params;
-  const deletedList = await deleteList(id);
+  const deletedList = await deleteList(id, req.user.user_id);
   if (!deletedList) {
     return res.status(404).json({ error: "List not found" });
   }
