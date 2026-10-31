@@ -7,7 +7,9 @@
 //      replaces spaces in usernames, which appear in page addresses.
 //   3. Moves each id counter past the highest id in its table, since the
 //      sample data sets some ids itself.
-//   4. Creates the app's own database account (PG_USER) with only the
+//   4. Adds any of the extra sample products (more-products.sql) that are
+//      missing, which also brings older databases up to date.
+//   5. Creates the app's own database account (PG_USER) with only the
 //      access the app needs, or updates its password and access.
 // It connects as the database owner (PG_ADMIN_USER). The database itself
 // must already exist.
@@ -130,6 +132,9 @@ async function setup() {
       );
     }
     console.log("Id counters are past the existing rows");
+
+    const added = await t.result(readSql("more-products.sql"), null, (r) => r.rowCount);
+    console.log(`Added ${added} sample products`);
 
     await setUpAppAccount(t);
   });

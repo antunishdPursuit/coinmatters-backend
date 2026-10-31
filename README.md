@@ -155,8 +155,11 @@ erDiagram
 A list stores its items by name rather than linking to products, because
 the same item is a separate product row at each store; the browser matches
 names to products when comparing prices. `db/schema.sql` creates the
-tables, `db/upgrades.sql` updates tables made by an older version, and
-`db/seed.sql` holds the sample data.
+tables, `db/upgrades.sql` updates tables made by an older version,
+`db/seed.sql` holds the sample data, and `db/more-products.sql` adds 10
+more groceries to each store, including in databases set up earlier. Their
+prices are sample data, not real store
+prices.
 
 ## Known limits
 
