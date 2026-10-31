@@ -30,6 +30,10 @@ ALTER TABLE products ALTER COLUMN price SET NOT NULL;
 ALTER TABLE products ALTER COLUMN product_name SET NOT NULL;
 ALTER TABLE products ALTER COLUMN retailer_id SET NOT NULL;
 
+-- The sample data once had an image link starting "https:/https://".
+UPDATE products SET thumbnail = substr(thumbnail, length('https:/') + 1)
+ WHERE thumbnail LIKE 'https:/https://%';
+
 -- Lists keep their items as names in lists.products; products_list was
 -- never used. It is dropped only while empty, so no data can be lost.
 DO $$
