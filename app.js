@@ -9,8 +9,9 @@ const { validate, registerProblem, loginProblem } = require("./validations/input
 // DEPENDENCIES
 const cors = require("cors");
 const express = require("express");
-const registerController = require("./controllers/registerController"); 
+const registerController = require("./controllers/registerController");
 const CookieParser = require("cookie-parser");
+const db = require("./db/dbConfig");
 
 
 // CONFIGURATION
@@ -48,6 +49,18 @@ app.use((req, res, next) => {
 // ROUTES
 app.get("/", (req, res) => {
   res.send("Welcome to CoinMatters App, where ya coin really matters");
+});
+
+// Says whether the API can reach its database, for scripts and monitors.
+// The reason for a failure stays in the server log.
+app.get("/health", async (req, res) => {
+  try {
+    await db.one("SELECT 1");
+    res.json({ status: "ok" });
+  } catch (error) {
+    console.error("Health check failed:", error.message);
+    res.status(503).json({ status: "unavailable" });
+  }
 });
 
 app.post('/register', registerLimiter, validate(registerProblem), registerController.registerUser);
