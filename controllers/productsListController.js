@@ -15,7 +15,7 @@ products.get("/:id", checkIds("id"), async (req, res) => {
   if (product) {
     res.json(product);
   } else {
-    res.status(404).json({ error: "not found" });
+    res.status(404).json({ error: "Not found" });
   }
 });
 

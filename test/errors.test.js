@@ -56,5 +56,6 @@ test("unknown paths get 404 for every method", async () => {
     const body = method === "POST" || method === "PUT" ? {} : undefined;
     const res = await request("/nope/deeper", { method, body });
     assert.equal(res.status, 404, method);
+    assert.deepEqual(res.json, { error: "Not found" }, method);
   }
 });

@@ -18,7 +18,7 @@ retailers.get("/:id", checkIds("id"), async (req, res) => {
   if (retailer) {
     res.json(retailer);
   } else {
-    res.status(404).json({ error: "not found" });
+    res.status(404).json({ error: "Not found" });
   }
 });
 

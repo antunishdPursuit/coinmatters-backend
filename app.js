@@ -73,8 +73,9 @@ app.use("/lists", listsRouter);
 
 
 // 404 PAGE
+// JSON like every other response, so clients can always read { error }.
 app.use((req, res) => {
-  res.status(404).send("Page not found");
+  res.status(404).json({ error: "Not found" });
 });
 
 // ERRORS
