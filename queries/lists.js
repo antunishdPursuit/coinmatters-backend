@@ -6,10 +6,6 @@ const db = require("../db/dbConfig.js");
 const getUserLists = (user_id) =>
   db.any("SELECT * FROM lists WHERE user_id=$1", user_id);
 
-// One list, or null if there is none
-const getList = (id) =>
-  db.oneOrNone("SELECT * FROM lists WHERE list_id = $1", id);
-
 // date_created is set by the database, not the client.
 const newList = (list) =>
   db.one(
@@ -30,7 +26,6 @@ const updateList = (id, user_id, list) =>
 
 module.exports = {
   getUserLists,
-  getList,
   newList,
   deleteList,
   updateList,
