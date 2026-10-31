@@ -11,7 +11,10 @@ INSERT INTO users (username, email, password, created_at) VALUES
 
 INSERT INTO lists (user_id, list_name, products, note, date_created) VALUES
 (4, 'Grocery List', ARRAY['Product1', 'Product2', 'Product3'], 'every day groceries', '2024-01-16T15:05:41.139Z'),
-(2, 'Party List', ARRAY['Product1', 'Product2', 'Product3'], 'party items', '2024-01-16T15:05:41.139Z');
+(2, 'Party List', ARRAY['Product1', 'Product2', 'Product3'], 'party items', '2024-01-16T15:05:41.139Z'),
+-- testuser's lists, ready to open after logging in
+(1, 'Grocery List', ARRAY['milk', 'eggs', 'water', 'cheese'], 'every day groceries', '2026-10-31T05:46:20.580Z'),
+(1, 'Party List', ARRAY['pizza', 'ice cream', 'water', 'yogurt'], 'party items', '2026-10-31T06:05:02.233Z');
 
 
 INSERT INTO retailers (retailer_id, retailer_name, zipcodes_array, website) VALUES
