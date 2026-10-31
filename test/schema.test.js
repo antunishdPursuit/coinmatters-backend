@@ -20,6 +20,14 @@ test("every list has an owner, and lists are indexed by owner", async () => {
   assert.match(index.indexdef, /\(user_id\)/);
 });
 
+test("deleting a user deletes their lists", async () => {
+  const link = await db.oneOrNone(
+    "SELECT confdeltype FROM pg_constraint WHERE conname = 'lists_user_id_fkey' AND conrelid = 'lists'::regclass"
+  );
+  assert.ok(link, "lists_user_id_fkey is missing");
+  assert.equal(link.confdeltype, "c");
+});
+
 test("a list's creation time is a required timestamp the database fills in", async () => {
   const date = await column("lists", "date_created");
   assert.equal(date.data_type, "timestamp with time zone");

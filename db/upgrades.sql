@@ -3,8 +3,18 @@
 -- be safe to repeat. It fails, and setup changes nothing, if existing rows
 -- break a new rule.
 
--- Every list belongs to a user.
+-- Every list belongs to a user, and goes when its user is deleted. Older
+-- tables made the link without the delete rule, so it is rebuilt once.
 ALTER TABLE lists ALTER COLUMN user_id SET NOT NULL;
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint
+                  WHERE conname = 'lists_user_id_fkey' AND conrelid = 'lists'::regclass AND confdeltype = 'c') THEN
+    ALTER TABLE lists DROP CONSTRAINT IF EXISTS lists_user_id_fkey;
+    ALTER TABLE lists ADD CONSTRAINT lists_user_id_fkey
+      FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 -- A list's creation time is a real timestamp that the server sets. Old
 -- rows stored it as ISO text, which converts directly; missing ones get
