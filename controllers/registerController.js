@@ -70,7 +70,7 @@ class UserController {
   async userData(req, res){
     res.json({
         message: 'Successful log in',
-        authorizedData: req.user
+        authorizedData: publicUser(req.user)
     });
   }
 

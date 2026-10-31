@@ -26,6 +26,8 @@ test("/check-login and /user accept a valid session", async () => {
   const me = await request("/user", { cookie });
   assert.equal(me.status, 200);
   assert.equal(me.json.authorizedData.username, username);
+  // The same public fields as /login and /check-login, without token times.
+  assert.deepEqual(me.json.authorizedData, { user_id, username, email });
 });
 
 test("every lists route needs a session", async () => {
