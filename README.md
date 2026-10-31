@@ -1,7 +1,7 @@
 # CoinMatters API
 
 The Express and PostgreSQL API behind the
-[CoinMatters frontend](https://github.com/antunishdPursuit/coinmatterscapstone-frontend).
+[CoinMatters frontend](https://github.com/antunishdPursuit/coinmatters).
 It stores accounts and saved grocery lists and serves the products and stores
 the frontend compares.
 

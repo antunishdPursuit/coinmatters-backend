@@ -19,15 +19,15 @@
   "main": "server.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/antunishdPursuit/Coinmatters-backened.git"
+    "url": "git+https://github.com/antunishdPursuit/coinmatters-backend.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/antunishdPursuit/Coinmatters-backened/issues"
+    "url": "https://github.com/antunishdPursuit/coinmatters-backend/issues"
   },
-  "homepage": "https://github.com/antunishdPursuit/Coinmatters-backened#readme",
+  "homepage": "https://github.com/antunishdPursuit/coinmatters-backend#readme",
   "description": "",
   "overrides": {
     "qs": "6.16.1",
