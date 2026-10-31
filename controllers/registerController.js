@@ -58,7 +58,6 @@ class UserController {
 
       const token = generateAuthToken(user);
       res.cookie("dataToken", token, { ...COOKIE_OPTIONS, maxAge: SESSION_SECONDS * 1000 });
-      console.log("Login Successful")
       // The frontend learns who logged in without a second request.
       res.status(200).json({ message: "Cookie Set", user: publicUser(user) });
     } catch (error) {
