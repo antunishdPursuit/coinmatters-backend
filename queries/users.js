@@ -10,6 +10,18 @@ const PUBLIC_COLUMNS = "user_id, username, email, created_at";
 const getUser = (id) =>
   db.oneOrNone(`SELECT ${PUBLIC_COLUMNS} FROM users WHERE user_id=$1`, id);
 
+const createUser = (username, email, hashedPassword) =>
+  db.one(
+    "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING user_id",
+    [username, email, hashedPassword]
+  );
+
+// Includes the password hash, for checking a login. Never send it to a client.
+const findUserByEmail = (email) =>
+  db.oneOrNone("SELECT * FROM users WHERE email = $1", email);
+
 module.exports = {
-  getUser
+  getUser,
+  createUser,
+  findUserByEmail,
 };

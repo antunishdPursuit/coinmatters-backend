@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const userModel = require("../models/userModel");
+const { createUser, findUserByEmail } = require("../queries/users");
 const jwt = require("jsonwebtoken");
 
 // The session cookie and the token inside it expire together.
@@ -27,7 +27,7 @@ class UserController {
       const email = req.body.email.trim().toLowerCase();
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      await userModel.createUser(username, email, hashedPassword);
+      await createUser(username, email, hashedPassword);
 
       res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
@@ -46,7 +46,7 @@ class UserController {
       const { password } = req.body;
       const email = req.body.email.trim().toLowerCase();
 
-      const user = await userModel.findUserByEmail(email);
+      const user = await findUserByEmail(email);
       if (!user) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
