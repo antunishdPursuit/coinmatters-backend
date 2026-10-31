@@ -111,9 +111,10 @@ whole number gets 400. A `user` is `{ user_id, username, email }`; the API
 never returns password hashes.
 
 Input rules: usernames are 3 to 30 letters, numbers, dots, dashes or
-underscores; passwords are 8 to 72 characters; list names are 1 to 255
-characters; a list holds up to 500 item names. Too many failed logins (10
-in 15 minutes) or new accounts (5 in an hour) from one address get 429.
+underscores; passwords are at least 8 characters and at most 72 bytes, where
+accented letters and emoji take 2 to 4 bytes each; list names are 1 to 255
+characters; a list holds up to 500 item names. Too many failed logins (10 in
+15 minutes) or new accounts (5 in an hour) from one address get 429.
 
 ## Data model
 

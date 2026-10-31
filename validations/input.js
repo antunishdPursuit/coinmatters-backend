@@ -18,7 +18,7 @@ const registerProblem = (body = {}) => {
   }
   // bcrypt only uses the first 72 bytes of a password.
   if (typeof body.password !== "string" || body.password.length < 8 || Buffer.byteLength(body.password) > 72) {
-    return "Password must be 8 to 72 characters";
+    return "Password must be at least 8 characters and at most 72 bytes; accented letters and emoji take 2 to 4 bytes each";
   }
   return null;
 };
