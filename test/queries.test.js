@@ -26,7 +26,7 @@ test("a list can be renamed and its items and note changed", async () => {
     cookie: session.cookie,
     body: { list_name: "Groceries", products: ["milk"], note: "" },
   });
-  assert.equal(created.status, 200);
+  assert.equal(created.status, 201);
 
   const updated = await request(`/lists/user/${session.user_id}/${created.json.list_id}`, {
     method: "PUT",
@@ -51,7 +51,7 @@ test("the server records when a list was created and ignores a sent date", async
     cookie: session.cookie,
     body: { list_name: "Groceries", products: [], note: "", date_created: "1999-01-01" },
   });
-  assert.equal(created.status, 200);
+  assert.equal(created.status, 201);
   // Sent as an ISO timestamp the browser can read with new Date(...).
   assert.match(created.json.date_created, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/);
   const createdAt = new Date(created.json.date_created).getTime();

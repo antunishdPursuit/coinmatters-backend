@@ -47,7 +47,7 @@ test("a user cannot read, add to, change or delete another user's lists", async 
   const owner = await newSession();
   const other = await newSession();
   const created = await request(`/lists/${owner.user_id}`, { method: "POST", cookie: owner.cookie, body: listBody });
-  assert.equal(created.status, 200);
+  assert.equal(created.status, 201);
   const listId = created.json.list_id;
 
   // Using the owner's user_id in the path is refused outright.
@@ -74,7 +74,7 @@ test("a list is always created for the logged-in user", async () => {
     cookie: session.cookie,
     body: { ...listBody, user_id: session.user_id + 1 },
   });
-  assert.equal(res.status, 200);
+  assert.equal(res.status, 201);
   assert.equal(res.json.user_id, session.user_id);
 });
 

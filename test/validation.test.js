@@ -66,7 +66,7 @@ test("lists reject bad input with 400", async () => {
     assert.equal(res.status, 400, JSON.stringify(body));
   }
   const created = await request(`/lists/${user_id}`, { method: "POST", cookie, body: good });
-  assert.equal(created.status, 200);
+  assert.equal(created.status, 201);
   const update = await request(`/lists/user/${user_id}/${created.json.list_id}`, { method: "PUT", cookie, body: { list_name: "" } });
   assert.equal(update.status, 400);
 });

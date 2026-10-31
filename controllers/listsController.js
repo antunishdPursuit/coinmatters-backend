@@ -43,7 +43,7 @@ lists.post("/:user_id", checkIds("user_id"), requireOwnUser, validate(listProble
     note: req.body.note,
   };
   const createdList = await newList(newListData);
-  res.status(200).json(createdList);
+  res.status(201).json(createdList);
 });
 
 // UPDATE a list for a specific user
